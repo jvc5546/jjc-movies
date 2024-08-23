@@ -1,0 +1,28 @@
+deploy:
+  # These first four commands below are from the debian tab at
+  # https://docs.doppler.com/docs/install-cli
+  # - sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+  # - curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
+  # - echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
+  - echo "Step ONE"
+  # - sudo apt-get update && sudo apt-get install doppler
+  # Quick verification that Doppler is installed correctly
+  # - doppler --version
+  - echo "Step TWO"
+
+  # Manually apply the data volume, allowing us to specify its storageClassName
+  # - kubectl apply -f okteto-data-pvc.yaml
+  - kubectl version
+
+  # By running this with doppler, Doppler secrets are used to populate the environment variables
+  # called out in the "environment" of each service in docker-compose.yml.
+  # DOPPLER_TOKEN and DOPPLER_CONFIG are passed in via GitHub Actions workflows.
+  # DOPPLER_PROJECT is also required, but is provided in doppler.yaml
+  # Use feature flag OKTETO_COMPOSE_VOLUME_AFFINITY_ENABLED env var to disable node affinity for volumes
+  # https://github.com/okteto/okteto/pull/4101
+  # - CORS_ORIGIN_DOMAIN="https://app-${OKTETO_NAMESPACE}.preview.pvcy.io" doppler run --preserve-env -- okteto build --no-cache -f docker-compose.yml
+  # - CORS_ORIGIN_DOMAIN="https://app-${OKTETO_NAMESPACE}.preview.pvcy.io" doppler run --preserve-env -- okteto deploy -f docker-compose.yml -v OKTETO_COMPOSE_VOLUME_AFFINITY_ENABLED=false -v OKTETO_KEEPALIVE_CLIENT_PERMIT_WITHOUT_STREAM=true
+  # - doppler run -- okteto pipeline deploy -r https://github.com/pvcy/analyzer-app --name analyzer-app --branch main
+  - okteto build --no-cache
+  - okteto deploy
+  - okteto pipeline deploy -r https://github.com/okteto/python-getting-started --name analyzer-app --branch main
