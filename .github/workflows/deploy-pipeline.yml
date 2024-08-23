@@ -1,0 +1,34 @@
+# File: .github/workflows/workflow.yml
+on:
+  push:
+    branches:
+      - main
+
+name: example-deploy-pipeline-name-here
+
+jobs:
+  devflow:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@main
+
+    - name: context
+      uses: okteto/context@latest
+      with:
+        url: ${{ secrets.OKTETO_URL }}
+        token: ${{ secrets.OKTETO_TOKEN }}
+
+    - name: "Activate Namespace"
+      uses: okteto/namespace@latest
+      with:
+        name: main
+
+    - name: "Trigger the pipeline"
+      uses: okteto/pipeline@latest
+      with:
+        name: trigger-pipeline-step-name-here
+        namespace: main
+        timeout: 8m
+        skipIfExists: false
+        variables: "DB_HOST=mysql,CONFIG_PATH=/tmp/config.yaml"
