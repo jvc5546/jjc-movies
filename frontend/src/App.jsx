@@ -32,7 +32,7 @@ class App extends Component {
       session: {
         name: 'Jona',
         lastName: 'Caballero',
-        username: 'jvc5546'
+        username: 'jvc5546-gmail'
       },
       fixHeader: false
     };
