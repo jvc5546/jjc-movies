@@ -26,4 +26,5 @@ jobs:
         namespace: main
         timeout: 8m
         skipIfExists: false
+        filename: okteto-pipeline.yaml
         variables: "DB_HOST=mysql,CONFIG_PATH=/tmp/config.yaml"
