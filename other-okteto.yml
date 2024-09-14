@@ -1,0 +1,71 @@
+icon: https://apps.okteto.com/movies/icon.png
+
+build:
+  frontend:
+    context: frontend
+  frontend-dev:
+    context: frontend
+    target: dev
+  catalog:
+    context: catalog
+  rent:
+    context: rent
+  api:
+    context: api
+  api-dev:
+    context: api
+    target: dev
+  worker:
+    context: worker
+  worker-dev:
+    context: worker
+    target: dev
+
+deploy:
+  - name: list files
+    command: ls -l
+  - name: Current directory
+    command:  echo "your current directory is- $(pwd)"
+
+dev:
+  frontend:
+    image: ${OKTETO_BUILD_FRONTEND_DEV_IMAGE}
+    command: bash
+    sync:
+      - frontend:/usr/src/app
+  catalog:
+    command: yarn start
+    sync:
+      - catalog:/src
+    forward:
+      - 9229:9229
+  rent:
+    command: mvn spring-boot:run
+    sync:
+      - rent:/app
+    volumes:
+      - /root/.m2
+    forward:
+      - 5005:5005
+  api:
+    image: ${OKTETO_BUILD_API_DEV_IMAGE}
+    command: bash
+    securityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE
+    sync:
+      - api:/usr/src/app
+    forward:
+      - 2346:2345
+  worker:
+    image: ${OKTETO_BUILD_WORKER_DEV_IMAGE}
+    command: bash
+    securityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE
+    sync:
+      - worker:/usr/src/app
+    forward:
+      - 2345:2345
